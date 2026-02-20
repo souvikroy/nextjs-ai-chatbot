@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Flow Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Serif+Display&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #141824;
+            --bg-card: #1a1f2e;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #ff006e;
+            --accent-tertiary: #8338ec;
+            --text-primary: #e8eaed;
+            --text-secondary: #9ca3af;
+            --border-color: rgba(0, 217, 255, 0.2);
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 5rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            position: relative;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 2rem;
+            align-items: start;
+            opacity: 0;
+            animation: slideIn 0.6s ease-out forwards;
+            position: relative;
+        }
+
+        .step:nth-child(1) { animation-delay: 0.3s; }
+        .step:nth-child(2) { animation-delay: 0.5s; }
+        .step:nth-child(3) { animation-delay: 0.7s; }
+        .step:nth-child(4) { animation-delay: 0.9s; }
+        .step:nth-child(5) { animation-delay: 1.1s; }
+        .step:nth-child(6) { animation-delay: 1.3s; }
+        .step:nth-child(7) { animation-delay: 1.5s; }
+        .step:nth-child(8) { animation-delay: 1.7s; }
+
+        .step-number {
+            position: sticky;
+            top: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .number-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .number-circle::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .step:hover .number-circle::before {
+            opacity: 0.3;
+        }
+
+        .connector {
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(180deg, var(--border-color) 0%, transparent 100%);
+        }
+
+        .step:last-child .connector {
+            display: none;
+        }
+
+        .step-content {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .step-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .step:hover .step-content::before {
+            opacity: 1;
+        }
+
+        .step-content:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 217, 255, 0.2);
+        }
+
+        .step-title {
+            font-family: 'Work Sans', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--accent-primary);
+        }
+
+        .step-actors {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .actor-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--accent-primary);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-primary);
+            color: var(--text-primary);
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: rgba(131, 56, 236, 0.1);
+            border-left: 3px solid var(--accent-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .note strong {
+            color: var(--accent-tertiary);
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 4rem 0;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .legend-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-label strong {
+            display: block;
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .step {
+                grid-template-columns: 1fr;
+            }
+
+            .connector {
+                height: 50px;
+            }
+
+            .legend {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .arrow {
+            display: inline-block;
+            margin: 0 0.5rem;
+            color: var(--accent-primary);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>AI Chat Flow Architecture</h1>
+            <p class="subtitle">// End-to-End Request Journey Through the Stack</p>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #00d9ff, #0099cc);"></div>
+                <div class="legend-label">
+                    <strong>User (U)</strong>
+                    Frontend Interface
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ff006e, #cc0057);"></div>
+                <div class="legend-label">
+                    <strong>API (C)</strong>
+                    Next.js Chat Endpoint
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #8338ec, #6827c7);"></div>
+                <div class="legend-label">
+                    <strong>SDK (S)</strong>
+                    Vercel AI SDK
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ffd60a, #ccab08);"></div>
+                <div class="legend-label">
+                    <strong>LLM (L)</strong>
+                    OpenAI/Anthropic
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #06ffa5, #05cc84);"></div>
+                <div class="legend-label">
+                    <strong>DB (D)</strong>
+                    Postgres/Drizzle
+                </div>
+            </div>
+        </div>
+
+        <div class="flow-container">
+            <!-- Step 1 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">1</div>
+                    <div class="connector"></div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">User Initiates Request</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">User (U)</span>
+                        <span class="actor-tag">API (C)</span>
+                    </div>
+                    <p class="step-description">
+                        The user sends a message through the UI interface, which triggers a POST request to the Next.js API endpoint with the message content and model information.
+                    </p>
+                    <div class="code-block">
+POST /api/chat<br>
+{<br>
+  &nbsp;&nbsp;message: "User query here",<br>
+  &nbsp;&nbsp;model: "gpt-4" | "claude-3",<br>
+  &nbsp;&nbsp;conversationId: "abc123"<br>
+}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">2</div>
+                    <div class="connector"></div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Entitlement Check & History Fetch</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">API (C)</span>
+                        <span class="actor-tag">Database (D)</span>
+                    </div>
+                    <p class="step-description">
+                        The API handler verifies user entitlements (subscription tier, usage limits) and retrieves conversation history from the database to provide context for the LLM.
+                    </p>
+                    <div class="code-block">
+// Verify access permissions<br>
+await verifyEntitlements(userId)<br>
+<br>
+// Fetch conversation context<br>
+const history = await db.messages.findMany({<br>
+  &nbsp;&nbsp;where: { conversationId }<br>
+})
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">3</div>
+                    <div class="connector"></div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Initialize AI Stream</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">API (C)</span>
+                        <span class="actor-tag">Vercel SDK (S)</span>
+                    </div>
+                    <p class="step-description">
+                        The API calls Vercel AI SDK's streamText function, configuring the selected model, system prompt, conversation history, and available tools (like document creation).
+                    </p>
+                    <div class="code-block">
+const stream = streamText({<br>
+  &nbsp;&nbsp;model: openai('gpt-4-turbo'),<br>
+  &nbsp;&nbsp;system: systemPrompt,<br>
+  &nbsp;&nbsp;messages: history,<br>
+  &nbsp;&nbsp;tools: { createDocument, searchWeb }<br>
+})
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">4</div>
+                    <div class="connector"></div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">LLM Processing Begins</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">Vercel SDK (S)</span>
+                        <span class="actor-tag">LLM (L)</span>
+                    </div>
+                    <p class="step-description">
+                        The SDK forwards the request to the LLM (OpenAI/Anthropic), which begins generating the response. The LLM may produce partial text or decide to call tools based on the user's query.
+                    </p>
+                    <div class="code-block">
+LLM Response Types:<br>
+<span class="arrow">→</span> Partial Text (streaming tokens)<br>
+<span class="arrow">→</span> Tool Call (createDocument, searchWeb, etc.)<br>
+<span class="arrow">→</span> Function Arguments
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">5</div>
+                    <div class="connector"></div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Multi-Step Reasoning Loop</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">Vercel SDK (S)</span>
+                        <span class="actor-tag">LLM (L)</span>
+                    </div>
+                    <p class="step-description">
+                        The LLM can perform multi-step reasoning, iterating up to 5 times to refine its response, execute tools, and incorporate tool results back into the generation process.
+                    </p>
+                    <div class="note">
+                        <strong>Note:</strong> This iterative process allows the AI to reason through complex queries, validate information, and create structured outputs like documents or artifacts.
+                    </div>
+                    <div class="code-block">
+Step 1: Generate initial response<br>
+Step 2: Call createDocument tool<br>
+Step 3: Process tool result<br>
+Step 4: Refine response with tool output<br>
+Step 5: Final validation
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">6</div>
+                    <div class="connector"></div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Progressive UI Updates (SSE)</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">Vercel SDK (S)</span>
+                        <span class="actor-tag">API (C)</span>
+                        <span class="actor-tag">User (U)</span>
+                    </div>
+                    <p class="step-description">
+                        The SDK streams Server-Sent Events (SSE) back through the API to the user interface. The UI progressively updates with text deltas and data chunks, creating a real-time conversation experience.
+                    </p>
+                    <div class="code-block">
+SSE Event Types:<br>
+• text-delta: Incremental text tokens<br>
+• data-kind: Metadata about response type<br>
+• data-id: Reference IDs for artifacts<br>
+• tool-call: Tool execution notifications
+                    </div>
+                    <div class="note">
+                        <strong>Real-time rendering:</strong> The artifact sidebar updates in real-time as documents are created or modified during the streaming process.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">7</div>
+                    <div class="connector"></div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Tool Execution & Finalization</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">Vercel SDK (S)</span>
+                        <span class="actor-tag">LLM (L)</span>
+                    </div>
+                    <p class="step-description">
+                        If the LLM called any tools, their execution logic runs and results are fed back into the response stream. The LLM generates the final text response incorporating all tool outputs.
+                    </p>
+                    <div class="code-block">
+// Tool execution example<br>
+if (toolCall === 'createDocument') {<br>
+  &nbsp;&nbsp;const doc = await createDocument({<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;title: args.title,<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;content: args.content<br>
+  &nbsp;&nbsp;})<br>
+  &nbsp;&nbsp;return { documentId: doc.id }<br>
+}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 8 -->
+            <div class="step">
+                <div class="step-number">
+                    <div class="number-circle">8</div>
+                </div>
+                <div class="step-content">
+                    <h3 class="step-title">Persistence & Cleanup</h3>
+                    <div class="step-actors">
+                        <span class="actor-tag">API (C)</span>
+                        <span class="actor-tag">Database (D)</span>
+                        <span class="actor-tag">User (U)</span>
+                    </div>
+                    <p class="step-description">
+                        After the stream completes, the API persists the conversation messages and any created documents to the database. The UI clears transient loading states and finalizes the display.
+                    </p>
+                    <div class="code-block">
+// Save to database<br>
+await saveMessages({<br>
+  &nbsp;&nbsp;conversationId,<br>
+  &nbsp;&nbsp;messages: [userMessage, assistantMessage]<br>
+})<br>
+<br>
+await saveDocument({<br>
+  &nbsp;&nbsp;documentId,<br>
+  &nbsp;&nbsp;userId,<br>
+  &nbsp;&nbsp;content<br>
+})
+                    </div>
+                    <div class="note">
+                        <strong>Complete:</strong> The conversation state is now fully persisted and the user can continue the dialogue or start a new thread.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 5rem; padding: 2rem; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
+            <p>Architecture Visualization • Built with Modern Web Standards</p>
+        </div>
+    </div>
+</body>
+</html>
