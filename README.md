@@ -1,4 +1,4 @@
-# Next.js AI Chatbot
+# Reasoning Chatbot
 
 A powerful, full-stack AI chatbot template built with Next.js, featuring real-time streaming, multi-model support, interactive artifacts, and advanced document processing capabilities.
 
