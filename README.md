@@ -1,6 +1,6 @@
 # Next.js AI Chatbot
 
-A powerful, full-stack AI chatbot template built with Next.js, featuring real-time streaming, multi-model support, and interactive artifacts.
+A powerful, full-stack AI chatbot template built with Next.js, featuring real-time streaming, multi-model support, interactive artifacts, and advanced document processing capabilities.
 
 ## Detailed End-to-End Architecture
 
@@ -129,3 +129,11 @@ When a tool like `createDocument` is triggered, the system often spawns a specia
   4. Optionally refine its own output in the same turn.
 - **Transient Streaming**: The agent communicates UI-state changes (like opening the sidebar or changing the artifact title) through "transient" data chunks in the SSE stream, allowing the frontend to react instantly before the content even starts generating.
 - **Feedback Loops**: The prompts explicitly instruct the agent to wait for user feedback after major document creations, preventing "runaway" updates and ensuring user control.
+
+### 9. Advanced Document & File Processing
+The application features a sophisticated pipeline for handling non-image documents (PDF, DOCX, CSV), ensuring they can be used effectively as context for the AI.
+
+- **Multi-Stage Lifecycle**: Documents undergo a 4-stage process: **Upload** (to Vercel Blob) → **Parsing** (server-side text extraction) → **Context Injection** (automatic inclusion in prompt) → **Persistence**.
+- **File Processing Panel**: A dedicated UI component (`FileProcessingPanel`) manages these stages, providing real-time progress indicators and allowing users to preview or dismiss processed files before sending.
+- **Contextual Awareness**: Extracted text from documents is passed to the LLM via a dedicated `fileContext` field, allowing the model to answer questions about the uploaded files alongside user messages.
+- **Unified Input**: The `MultimodalInput` component handles both standard chat, image attachments (for vision models), and document processing in a single, streamlined interface.
