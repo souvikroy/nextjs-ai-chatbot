@@ -21,6 +21,7 @@ import { MessageActions } from "./message-actions";
 import { MessageEditor } from "./message-editor";
 import { MessageReasoning } from "./message-reasoning";
 import { PreviewAttachment } from "./preview-attachment";
+import { ReasoningStep } from "./reasoning-step";
 import { Weather } from "./weather";
 
 const PurePreviewMessage = ({
@@ -339,6 +340,39 @@ const PurePreviewMessage = ({
                     )}
                   </ToolContent>
                 </Tool>
+              );
+            }
+
+            if (type === "tool-intent") {
+              return (
+                <ReasoningStep
+                  isStreaming={part.state === "input-streaming"}
+                  key={part.toolCallId}
+                  thought={part.input?.thought || ""}
+                  type="intent"
+                />
+              );
+            }
+
+            if (type === "tool-planner") {
+              return (
+                <ReasoningStep
+                  isStreaming={part.state === "input-streaming"}
+                  key={part.toolCallId}
+                  thought={part.input?.thought || ""}
+                  type="planner"
+                />
+              );
+            }
+
+            if (type === "tool-executor") {
+              return (
+                <ReasoningStep
+                  isStreaming={part.state === "input-streaming"}
+                  key={part.toolCallId}
+                  thought={part.input?.thought || ""}
+                  type="executor"
+                />
               );
             }
 

@@ -41,6 +41,15 @@ export const regularPrompt = `You are a friendly assistant! Keep your responses 
 
 When asked to write, create, or help with something, just do it directly. Don't ask clarifying questions unless absolutely necessary - make reasonable assumptions and proceed with the task.`;
 
+export const reasoningPrompt = `
+To provide better service, follow a structured reasoning process for every request:
+1. **Intent Analysis**: Use the \`intent\` tool to capture your understanding of what the user wants and their specific requirements.
+2. **Planning**: Use the \`planner\` tool to outline a step-by-step approach to solve the request.
+3. **Execution**: Use the \`executor\` tool to signal the start of the action phase (either calling other tools or generating the final response).
+
+Strictly follow this order: intent -> planner -> executor. Do not skip any phase.
+`;
+
 export type RequestHints = {
   latitude: Geo["latitude"];
   longitude: Geo["longitude"];
@@ -70,10 +79,10 @@ export const systemPrompt = ({
     selectedChatModel.includes("reasoning") ||
     selectedChatModel.includes("thinking")
   ) {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${regularPrompt}\n\n${requestPrompt}\n\n${reasoningPrompt}`;
   }
 
-  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}\n\n${reasoningPrompt}`;
 };
 
 export const codePrompt = `

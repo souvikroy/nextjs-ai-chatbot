@@ -5,6 +5,7 @@ import type { createDocument } from "./ai/tools/create-document";
 import type { getWeather } from "./ai/tools/get-weather";
 import type { requestSuggestions } from "./ai/tools/request-suggestions";
 import type { updateDocument } from "./ai/tools/update-document";
+import type { intent, planner, executor } from "./ai/tools/reasoning";
 import type { Suggestion } from "./db/schema";
 
 export type DataPart = { type: "append-message"; message: string };
@@ -21,12 +22,18 @@ type updateDocumentTool = InferUITool<ReturnType<typeof updateDocument>>;
 type requestSuggestionsTool = InferUITool<
   ReturnType<typeof requestSuggestions>
 >;
+type intentTool = InferUITool<typeof intent>;
+type plannerTool = InferUITool<typeof planner>;
+type executorTool = InferUITool<typeof executor>;
 
 export type ChatTools = {
   getWeather: weatherTool;
   createDocument: createDocumentTool;
   updateDocument: updateDocumentTool;
   requestSuggestions: requestSuggestionsTool;
+  intent: intentTool;
+  planner: plannerTool;
+  executor: executorTool;
 };
 
 export type CustomUIDataTypes = {

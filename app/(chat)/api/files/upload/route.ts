@@ -26,8 +26,6 @@ const FileSchema = z.object({
       }
     ),
 });
-
-
 export async function POST(request: Request) {
   const session = await auth();
 

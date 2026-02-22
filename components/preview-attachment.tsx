@@ -48,7 +48,6 @@ function DocumentIcon({ contentType }: { contentType: string }) {
     </div>
   );
 }
-
 export const PreviewAttachment = ({
   attachment,
   isUploading = false,
