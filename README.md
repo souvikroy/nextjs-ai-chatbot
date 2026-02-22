@@ -1,6 +1,6 @@
-# Reasoning Chatbot
+# Reasoning AI
 
-A powerful, full-stack AI chatbot template built with Next.js, featuring real-time streaming, multi-model support, interactive artifacts, and advanced document processing capabilities.
+A powerful, full-stack Reasoning AI platform built with Next.js, featuring real-time streaming, multi-model support, interactive artifacts, and advanced document processing capabilities.
 
 ## Features
 

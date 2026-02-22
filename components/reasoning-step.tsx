@@ -19,6 +19,9 @@ import { cn } from "@/lib/utils";
 type ReasoningStepProps = {
   type: "intent" | "planner" | "executor";
   thought: string;
+  intents?: string[];
+  plan?: Array<{ intent: string; steps: string[] }>;
+  executionSteps?: string[];
   isStreaming?: boolean;
 };
 
@@ -46,6 +49,9 @@ const stepConfigs = {
 export function ReasoningStep({
   type,
   thought,
+  intents,
+  plan,
+  executionSteps,
   isStreaming,
 }: ReasoningStepProps) {
   const config = stepConfigs[type];
@@ -84,7 +90,45 @@ export function ReasoningStep({
       <CollapsibleContent>
         <div className="border-t bg-muted/30 px-4 py-3">
           <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground leading-relaxed">
-            {thought}
+            <p className="mb-4 text-foreground font-medium">{thought}</p>
+            
+            {type === "intent" && intents && intents.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70">Identified Intents</span>
+                <ol className="list-decimal list-inside space-y-1">
+                  {intents.map((intent, i) => (
+                    <li key={i} className="text-sm">{intent}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {type === "planner" && plan && plan.length > 0 && (
+              <div className="mt-4 space-y-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70">Execution Plan</span>
+                {plan.map((p, i) => (
+                  <div key={i} className="space-y-1">
+                    <p className="text-sm font-semibold text-foreground">{p.intent}</p>
+                    <ul className="list-disc list-inside ml-2 space-y-1">
+                      {p.steps.map((step, j) => (
+                        <li key={j} className="text-xs">{step}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {type === "executor" && executionSteps && executionSteps.length > 0 && (
+              <div className="mt-4 space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground/70">Execution Steps</span>
+                <ul className="list-disc list-inside space-y-1">
+                  {executionSteps.map((step, i) => (
+                    <li key={i} className="text-sm">{step}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </CollapsibleContent>

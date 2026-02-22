@@ -349,6 +349,7 @@ const PurePreviewMessage = ({
                   isStreaming={part.state === "input-streaming"}
                   key={part.toolCallId}
                   thought={part.input?.thought || ""}
+                  intents={part.input?.intents as string[] | undefined}
                   type="intent"
                 />
               );
@@ -360,6 +361,7 @@ const PurePreviewMessage = ({
                   isStreaming={part.state === "input-streaming"}
                   key={part.toolCallId}
                   thought={part.input?.thought || ""}
+                  plan={part.input?.plan as any[] | undefined}
                   type="planner"
                 />
               );
@@ -371,6 +373,7 @@ const PurePreviewMessage = ({
                   isStreaming={part.state === "input-streaming"}
                   key={part.toolCallId}
                   thought={part.input?.thought || ""}
+                  executionSteps={part.input?.executionSteps as string[] | undefined}
                   type="executor"
                 />
               );

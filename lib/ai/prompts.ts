@@ -43,9 +43,9 @@ When asked to write, create, or help with something, just do it directly. Don't 
 
 export const reasoningPrompt = `
 To provide better service, follow a structured reasoning process for every request:
-1. **Intent Analysis**: Use the \`intent\` tool to capture your understanding of what the user wants and their specific requirements.
-2. **Planning**: Use the \`planner\` tool to outline a step-by-step approach to solve the request.
-3. **Execution**: Use the \`executor\` tool to signal the start of the action phase (either calling other tools or generating the final response).
+1. **Intent Analysis**: Use the \`intent\` tool to capture your understanding of what the user wants. You MUST identify exactly 10 distinct intents or requirements. If the user has attached documents, includes the text extraction and analysis of those documents in this stage.
+2. **Planning**: Use the \`planner\` tool to outline a step-by-step approach. For each of the 10 intents identified in the previous step, provide a detailed set of planning steps.
+3. **Execution**: Use the \`executor\` tool to signal the start of the action phase (either calling other tools or generating the final response). List the specific execution steps you are taking.
 
 Strictly follow this order: intent -> planner -> executor. Do not skip any phase.
 `;
