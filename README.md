@@ -4,14 +4,15 @@ A powerful, full-stack AI chatbot template built with Next.js, featuring real-ti
 
 ## Features
 
-- **Next.js App Router**: Advanced routing and performance optimizations.
+- **Next.js App Router**: Advanced routing and performance optimizations using Next.js 16.
 - **AI SDK**: Unified API for text generation, structured objects, and tool calls.
-- **Multi-Model Support**: OpenAI, Anthropic, Google, xAI, and more.
-- **Structured Reasoning**: Implements a clear **Intent -> Planner -> Executor** flow for complex requests.
-- **Interactive Artifacts**: Side-by-side display for code, text, and data structures.
-- **Document Processing**: Advanced PDF, DOCX, and CSV parsing.
-- **Data Persistence**: Postgres with Drizzle ORM and Redis for stream state.
-- **Authentication**: Secure login via Auth.js.
+- **Multi-Model Support**: OpenAI, Anthropic, Google, xAI (Grok), and more.
+- **Structured Reasoning**: Implements a dedicated **Intent -> Planner -> Executor** flow for complex multi-step requests.
+- **Interactive Artifacts**: Premium side-by-side display for code (with syntax highlighting), text, and dynamic data structures.
+- **Advanced Document Processing**: High-performance pipeline for PDF, DOCX, and CSV parsing with real-time progress tracking.
+- **Observability**: Built-in OpenTelemetry support via `@vercel/otel` for tracing and performance monitoring.
+- **Data Persistence**: Postgres with Drizzle ORM and Redis for stateful, resumable stream handling.
+- **Authentication**: Secure local and guest authentication via Auth.js.
 
 ## Running Locally
 
@@ -141,3 +142,10 @@ Sophisticated pipeline for handling PDF, DOCX, and CSV files:
 - **Multi-Stage Lifecycle**: Upload → Parsing → Context Injection → Persistence.
 - **File Processing Panel**: dedicated UI for real-time progress and previews.
 - **Contextual Awareness**: Extracted text is injected into the prompt via `fileContext`.
+
+### 9. Observability & Telemetry
+The application is instrumented with **OpenTelemetry (OTel)** to provide deep visibility into the AI lifecycle and performance.
+- **Provider**: Uses `@vercel/otel` for native integration with Vercel's observability suite.
+- **Auto-Instrumentation**: Captures HTTP requests, database queries (Drizzle/Postgres), and AI SDK operations.
+- **AI SDK Telemetry**: Specifically tracks `streamText` and `generateText` calls, providing insights into token usage, latency, and tool execution status.
+- **Custom Spans**: Key processes like document parsing and reasoning phase transitions are wrapped in spans for granular performance analysis.
